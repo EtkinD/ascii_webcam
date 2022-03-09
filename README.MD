@@ -30,3 +30,7 @@ Just double click the ```run.bat``` file.
 ``` shell 
 python ascii_webcam.py
 ```
+
+### Example
+
+![](Examples/example.png)
