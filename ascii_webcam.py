@@ -1,7 +1,31 @@
-from os import get_terminal_size, system, remove
+from os import get_terminal_size, system, remove, system
 from PIL import Image
 import cv2
-import signal
+import curses
+
+# Change color of the terminal
+"""
+Colors codes:
+0 = Black       8 = Gray
+1 = Blue        9 = Light Blue
+2 = Green       A = Light Green
+3 = Aqua        B = Light Aqua
+4 = Red         C = Light Red
+5 = Purple      D = Light Purple
+6 = Yellow      E = Light Yellow
+7 = White       F = Bright White
+"""
+system('color F')
+
+# Initialize curses
+s = curses.initscr()
+curses.noecho()
+curses.cbreak()
+s.keypad(True)
+s.nodelay(True)
+
+# Get terminal size
+rows, cols = get_terminal_size()
 
 
 def vid_printer(pixels, rows, columns, palette):
@@ -20,18 +44,10 @@ def vid_printer(pixels, rows, columns, palette):
             brightness  = (red + green + blue) / 3
             # Brightness is converted to a character from the palette.
             data += palette[round((brightness / 255 * (len(palette) - 1)))]
-        data += '\n'
-    # Clear the terminal before printing.
-    system('cls')
-    print(data)
-
-
-def signal_handler(*args):
-    """
-     Signal handler that terminates the program.
-    """
-    global alive
-    alive = False
+    # Print the data to the terminal.
+    s.clear()
+    s.addstr(0, 0, data)
+    s.refresh()
 
 
 # Set program alive, it will be set to false when the user presses Ctrl+C to terminate program.
@@ -46,11 +62,9 @@ if __name__ == '__main__':
     # Define a video capture object
     vid = cv2.VideoCapture(0)
 
-    # Initialize ctrl+c signal handler
-    signal.signal(signal.SIGINT, signal_handler)
-
+    q = -1
     # Capturing frame by frame from webcam
-    while alive:
+    while q < 0:
         # Capture frame
         ret, img = vid.read()
         if not ret:
@@ -65,14 +79,24 @@ if __name__ == '__main__':
         # Read from file
         image = Image.open(fp='img.png')
         # Resize image to fit terminal.
-        image = image.resize((get_terminal_size().columns, get_terminal_size().lines))
+        image = image.resize((rows, cols-1))
         # Convert image to RGB array
         pxls = image.load()
         # Render image to terminal
         vid_printer(pxls, image.size[1], image.size[0], colors)
+        # If user press any key, terminate program.
+        q = s.getch()
     # while terminating, release the webcam
     vid.release()
     # Remove temporary file
     remove('img.png')
+    # Clean up curses
+    s.clear()
+    s.refresh()
+    # Terminate curses
+    curses.nocbreak()
+    s.keypad(False)
+    curses.echo()
+    curses.endwin()
 
     exit(0)

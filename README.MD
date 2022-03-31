@@ -12,14 +12,14 @@ Script that takes a webcam image and converts it to ascii art on your terminal.
 
 ## Installation
 
-There is ```install_venv.bat``` file in root directory.
+There is `install_venv.bat` file in root directory.
 You can run it to install virtual environment and required packages.
 
 ## Running
 
 ### 1:
 
-Just double click the ```run.bat``` file.
+Just double click the `run.bat` file.
 
 ### 2:
 
@@ -31,6 +31,6 @@ Just double click the ```run.bat``` file.
 python ascii_webcam.py
 ```
 
-### Example
+## Example
 
 ![](Examples/example.png)
