@@ -63,40 +63,42 @@ if __name__ == '__main__':
     vid = cv2.VideoCapture(0)
 
     q = -1
-    # Capturing frame by frame from webcam
-    while q < 0:
-        # Capture frame
-        ret, img = vid.read()
-        if not ret:
-            continue
-        
-        # Belowe code is the only solution that I found to get size of captured image.
-        # It's very expensive, but it works currently.
-        # Captured image is written to a file, then read from it. This process is for getting size of image and resizing it.
+    try:
+        # Capturing frame by frame from webcam
+        while q < 0:
+            # Capture frame
+            ret, img = vid.read()
+            if not ret:
+                continue
+            
+            # Belowe code is the only solution that I found to get size of captured image.
+            # It's very expensive, but it works currently.
+            # Captured image is written to a file, then read from it. This process is for getting size of image and resizing it.
 
-        # Write captured image to a file
-        cv2.imwrite(filename='img.png', img=img)
-        # Read from file
-        image = Image.open(fp='img.png')
-        # Resize image to fit terminal.
-        image = image.resize((rows, cols-1))
-        # Convert image to RGB array
-        pxls = image.load()
-        # Render image to terminal
-        vid_printer(pxls, image.size[1], image.size[0], colors)
-        # If user press any key, terminate program.
-        q = s.getch()
-    # while terminating, release the webcam
-    vid.release()
-    # Remove temporary file
-    remove('img.png')
-    # Clean up curses
-    s.clear()
-    s.refresh()
-    # Terminate curses
-    curses.nocbreak()
-    s.keypad(False)
-    curses.echo()
-    curses.endwin()
+            # Write captured image to a file
+            cv2.imwrite(filename='img.png', img=img)
+            # Read from file
+            image = Image.open(fp='img.png')
+            # Resize image to fit terminal.
+            image = image.resize((rows, cols-1))
+            # Convert image to RGB array
+            pxls = image.load()
+            # Render image to terminal
+            vid_printer(pxls, image.size[1], image.size[0], colors)
+            # If user press any key, terminate program.
+            q = s.getch()
+    finally:
+        # while terminating, release the webcam
+        vid.release()
+        # Remove temporary file
+        remove('img.png')
+        # Clean up curses
+        s.clear()
+        s.refresh()
+        # Terminate curses
+        curses.nocbreak()
+        s.keypad(False)
+        curses.echo()
+        curses.endwin()
 
-    exit(0)
+        exit(0)
